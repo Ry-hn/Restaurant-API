@@ -20,9 +20,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => 'api'], function() {
     Route::get('product', 'Api\ProductController@index');
-    Route::get('product/{id}', 'ProductController@show');
-    Route::post('product', 'ProductController@store');
-    Route::put('product/{id}', 'ProductController@update');
-    Route::delete('product/{id}', 'ProductController@destroy');
+    Route::get('product/{id}', 'Api\ProductController@show');
+    Route::post('product', 'Api\ProductController@store');
+    Route::put('product/{id}', 'Api\ProductController@update');
+    Route::delete('product/{id}', 'Api\ProductController@destroy');
 });
 

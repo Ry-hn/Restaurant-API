@@ -56,6 +56,7 @@ class ProductController extends Controller
             return response(['message' => $validate->errors()], 400);
 
         $product = Product::create($storeData);
+        
         return response(['message' => 'Add Product Success', 'data' => $product], 200);
     }
 
