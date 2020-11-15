@@ -97,7 +97,7 @@ class ProductController extends Controller
 
         $updateData = $request->all();
         $validate = Validator::make($updateData, [
-            'nama_product' => 'required|max:60|unique:products',
+            'nama_product' => 'required|max:60|',
             'deskripsi_product' => 'required',
             'harga_product' => 'required|numeric',
         ]);
