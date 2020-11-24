@@ -14,7 +14,7 @@ class ProductController extends Controller
         $products = Product::all();
         
         if(count($products) > 0) {
-            return response([
+            return response()->json([
                 'message' => 'Retrieve All Success',
                 'data' => $products
             ], 200);
@@ -29,7 +29,6 @@ class ProductController extends Controller
     //search
     public function show($id) {
         $product = Product::find($id);
-
         if(!is_null($product)) {
             return response([
                 'message' => 'Retrieve Product Success',
@@ -51,7 +50,7 @@ class ProductController extends Controller
             'deskripsi_product' => 'required',
             'harga_product' => 'required|numeric',
         ]);
-
+        
         if($validate->fails())
             return response(['message' => $validate->errors()], 400);
 

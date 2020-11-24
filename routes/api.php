@@ -18,6 +18,10 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
+
+Route::post('register', 'Api\AuthController@register');
+Route::post('login', 'Api\AuthContoller@login');
+
 Route::group(['middleware' => 'api'], function() {
     Route::get('product', 'Api\ProductController@index');
     Route::get('product/{id}', 'Api\ProductController@show');
