@@ -14,16 +14,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-
 Route::post('register', 'Api\AuthController@register');
 Route::post('login', 'Api\AuthController@login');
 Route::middleware('auth:api')->post('logout', 'Api\AuthController@logout');
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
+});
 
-Route::group(['middleware' => 'api'], function() {
+// SAYA GOBLOK MAKANYA BUAT 2 GROUP
+
+Route::group(['middleware' => 'auth:api'], function() {
     Route::get('product', 'Api\ProductController@index');
     Route::get('product/{id}', 'Api\ProductController@show');
     Route::post('product', 'Api\ProductController@store');
@@ -31,3 +31,10 @@ Route::group(['middleware' => 'api'], function() {
     Route::delete('product/{id}', 'Api\ProductController@destroy');
 });
 
+Route::group(['middleware' => 'api'], function() {
+    Route::get('pbp/product', 'Api\ProductController@index');
+    Route::get('pbp/product/{id}', 'Api\ProductController@show');
+    Route::post('pbp/product', 'Api\ProductController@store');
+    Route::put('pbp/product/{id}', 'Api\ProductController@update');
+    Route::delete('pbp/product/{id}', 'Api\ProductController@destroy');
+});
