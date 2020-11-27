@@ -8,7 +8,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
+use Mail;
+use App\Mail\MailVerification;
 
 class AuthController extends Controller {
 
@@ -27,20 +30,34 @@ class AuthController extends Controller {
         
         $registrationData['password'] = bcrypt($request->password);
 
-        $registerLogin = array('email' => $registrationData['email'], 'password' => $registrationData['password']);
+        $registerLogin = array('email' => $registrationData['email'], 
+                                'password' => $registrationData['password'],
+                                'role' => $registrationData['role']);
+
         $registerDetails = array('email' => $registrationData['email'], 
                                     'nama_user' =>$registrationData['nama_user'],
                                     'telepon' => $registrationData['telepon']);
 
+        try {
 
-        $user = User::create($registerLogin);
-        $detail =  DetailUser::create($registerDetails);
+            $user = User::create($registerLogin);
+            $detail =  DetailUser::create($registerDetails);
 
-        return response([
-            'message' => 'Register Success',
-            'user' => $user,
-            'detail' => $detail
-        ], 200);
+            $detail = [
+                'name' => $registrationData['nama_user'],
+                'email' => $user->id
+            ];
+            Mail::to($registrationData['email'])->send(new MailVerification($detail));
+            
+            return response([
+                'message' => 'Register Success',
+                'user' => $user,
+                'detail' => $detail
+            ], 200);
+        }
+        catch(Exception $e) {
+            return response(['message' => 'Registration Failed!', 'error' => $e], 400);
+        }
     }
 
     public function login(Request $request) {
@@ -58,6 +75,10 @@ class AuthController extends Controller {
             return response(['message' => 'Invalid Credentials'], 401);
 
         $user = Auth::user();
+        
+        if(is_null($user->email_verified_at))
+            return response(['message' => 'Email Belum diverifikasi'], 400);
+
         $token = $user->createToken('Authentication Token')->accessToken;
     
         return response([
@@ -73,5 +94,41 @@ class AuthController extends Controller {
         return response()->json([
             'message' => 'Successfully logged out'
         ]);
+    }
+
+    public function verifyEmail($id) {
+        $user = User::findOrFail($id);
+
+        if(!is_null($user)) {
+            if(is_null($user->email_verified_at)) {
+                $user->email_verified_at =  Carbon::now()->format('Y-m-d H:i:s');
+
+                if($user->save()) {
+                    return response()->json([
+                        'message' => 'Verifikasi Berhasil',
+                        'time' => $user->email_verified_at
+                    ], 200);
+                }
+                else {
+                    return response()->json([
+                        'message' => 'Verifikasi Gagal'
+                    ], 400);
+                }
+            }
+            else {
+                return response()->json([
+                    'message' => 'Akun Telah diverifikasi'
+                ], 400);
+            }
+        }
+        else {
+            return response()->json([
+                'message' => 'Akun tidak ditemukan'
+            ], 400);
+        }
+        
+        return response()->json([
+            'message' => 'Verifikasi Gagal'
+        ], 400);
     }
 }

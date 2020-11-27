@@ -38,3 +38,5 @@ Route::group(['middleware' => 'api'], function() {
     Route::put('pbp/product/{id}', 'Api\ProductController@update');
     Route::delete('pbp/product/{id}', 'Api\ProductController@destroy');
 });
+
+Route::get('/user/verify/{id}', 'Api\AuthController@verifyEmail');
