@@ -29,6 +29,8 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('product', 'Api\ProductController@store');
     Route::put('product/{id}', 'Api\ProductController@update');
     Route::delete('product/{id}', 'Api\ProductController@destroy');
+
+    Route::put('user/{id}', 'Api\AuthController@update');
 });
 
 Route::group(['middleware' => 'api'], function() {

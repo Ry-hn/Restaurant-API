@@ -60,6 +60,59 @@ class AuthController extends Controller {
         }
     }
 
+    public function update(Request $request, $id) {
+        $requestData = $request->all();
+
+        $user = User::findOrFail($id);
+        $details = DetailUser::findOrFail($requestData['email']);
+
+        if(!is_null($user) && !is_null($details)) {
+            $validate = Validator::make($requestData, [
+                'email' => 'required',
+                'password' => 'required',
+                'nama_user' => 'required',
+                'telepon' => 'required'
+            ]);
+            
+            if(isset($requestData['nama_user'])){
+                $details->nama_user = $requestData['nama_user'];
+            }
+
+            if(isset($requestData['telepon'])){
+                $details->telepon = $requestData['telepon'];
+            }
+
+            if(isset($requestData['oldPassword'])) {
+                if(password_verify($requestData['oldPassword'],$user->password)) { 
+                    $user->password = bcrypt($requestData['newPassword']);
+                }
+                else {
+                    return response(['message' => 'Old Password does not match'], 400);
+                }
+            }
+
+            if($user->save() && $details->save()) {
+                return response([
+                    'message' => 'Update Profile Success',
+                    'user' => $user,
+                    'details' => $details
+                ], 200);
+            }
+    
+            return response([
+                'message' => 'Update Profile Failed',
+                'data' => null
+            ], 400);
+
+        }
+        else {
+            return response(['message' => 'Data tidak ditemukan'], 400);
+        }
+
+        
+
+    }
+
     public function login(Request $request) {
         $loginData = $request->all();
         
