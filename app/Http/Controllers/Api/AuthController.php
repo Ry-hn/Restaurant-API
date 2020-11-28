@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use File;
 use App\User;
 use App\DetailUser;
 use App\Http\Controllers\Controller;
@@ -19,30 +20,20 @@ class AuthController extends Controller {
         $registrationData = $request->all();
 
         $validate = Validator::make($registrationData, [
-            'email' => 'required|unique:users|unique:detail_users',
+            'email' => 'required|unique:users',
             'password' => 'required',
             'nama_user' => 'required',
-            'telepon' => 'required|unique:detail_users'
+            'telepon' => 'required|unique:users'
         ]);
 
         if($validate->fails()) 
             return response(['message' => $validate->errors()], 400);
         
         $registrationData['password'] = bcrypt($request->password);
-
-        $registerLogin = array('email' => $registrationData['email'], 
-                                'password' => $registrationData['password'],
-                                'role' => $registrationData['role']);
-
-        $registerDetails = array('email' => $registrationData['email'], 
-                                    'nama_user' =>$registrationData['nama_user'],
-                                    'telepon' => $registrationData['telepon']);
-
+        
         try {
 
-            $user = User::create($registerLogin);
-            $detail =  DetailUser::create($registerDetails);
-
+            $user = User::create($registrationData);
             $detail = [
                 'name' => $registrationData['nama_user'],
                 'email' => $user->id
@@ -63,56 +54,38 @@ class AuthController extends Controller {
     public function update(Request $request, $id) {
         $requestData = $request->all();
 
-        $user = User::findOrFail($id);
-        $details = DetailUser::findOrFail($requestData['email']);
-
-        if(!is_null($user) && !is_null($details)) {
-            $validate = Validator::make($requestData, [
-                'email' => 'required',
-                'password' => 'required',
-                'nama_user' => 'required',
-                'telepon' => 'required'
-            ]);
-            
-            if(isset($requestData['nama_user'])){
-                $details->nama_user = $requestData['nama_user'];
-            }
-
-            if(isset($requestData['telepon'])){
-                $details->telepon = $requestData['telepon'];
-            }
-
-            if(isset($requestData['oldPassword'])) {
-                if(password_verify($requestData['oldPassword'],$user->password)) { 
-                    $user->password = bcrypt($requestData['newPassword']);
-                }
-                else {
-                    return response(['message' => 'Old Password does not match'], 400);
-                }
-            }
-
-            if($user->save() && $details->save()) {
-                return response([
-                    'message' => 'Update Profile Success',
-                    'user' => $user,
-                    'details' => $details
-                ], 200);
-            }
+        $user = User::findOrFail($id);  
     
-            return response([
-                'message' => 'Update Profile Failed',
-                'data' => null
-            ], 400);
-
-        }
-        else {
-            return response(['message' => 'Data tidak ditemukan'], 400);
-        }
-
+        if(isset($requestData['nama_user']))
+            $user->nama_user = $requestData['nama_user'];
         
+        // email bisa diubah atau tidak ??
+        // if(isset($requestData['email']))
+        //     $user->email = $requestData['email'];
+
+        /* cek dulu apakah password yang dimasukin ada di db nda
+             kalau ada baru bisa ganti */
+        if(isset($requestData['oldPassword'])) {
+            if(password_verify($requestData['oldPassword'],$user->password)) 
+                $user->password = bcrypt($requestData['newPassword']);
+            else 
+                return response(['message' => 'Old Password does not match'], 400);
+        }
+
+        if($user->save()) {
+            return response([
+                'message' => 'Update Profile Success',
+                'data' => $user
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Update Profile Failed',
+            'data' => null
+        ], 400);
 
     }
-
+    
     public function login(Request $request) {
         $loginData = $request->all();
         
@@ -183,5 +156,64 @@ class AuthController extends Controller {
         return response()->json([
             'message' => 'Verifikasi Gagal'
         ], 400);
+    }
+
+    public function destroy($id) {
+        $user = User::findOrFail($id);
+
+        if(is_null($user)) {
+            return response([
+                'message' => 'User Not Found',
+                'data' => null
+            ], 404);
+        }
+
+        if($user->delete()) {
+            return response([
+                'message' => 'Delete User Success',
+                'data' => $user
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Delete User Failed',
+            'data' => null
+        ], 400);
+    }
+
+    public function uploadImage(Request $request) {
+
+        $reqData = $request->all();
+
+        $myData = User::findOrFail($reqData['id']);
+
+        if($request->hasFile('gambar')) {
+            $img = $request->file('gambar');
+            $filename = $reqData['id'] . '.' . $img->getClientOriginalExtension();
+            $request->file('gambar')->move(public_path('/'), $filename);
+            $path = public_path($filename);
+
+            $myData->gambar = $filename;
+        }
+        else {
+            return response(['message' => 'No gambar'], 400);
+        }
+
+        if($myData->save()) {
+            return response([
+                'message' => 'Update Image Success',
+                'data' => $myData
+            ], 200);
+        }
+    }
+    
+    public function getImage($location) {
+
+        $path = public_path($location);
+
+        if(File::exists($path))
+            return response()->file($path);
+
+        return response(['message' => 'file not found', 'path' => $path], 400);
     }
 }
