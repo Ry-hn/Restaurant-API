@@ -190,7 +190,7 @@ class AuthController extends Controller {
         if($request->hasFile('gambar')) {
             $img = $request->file('gambar');
             $filename = $reqData['id'] . '.' . $img->getClientOriginalExtension();
-            $request->file('gambar')->move(public_path('/'), $filename);
+            $request->file('gambar')->move(public_path('/Photo/Profile'), $filename);
             $path = public_path($filename);
 
             $myData->gambar = $filename;
@@ -209,7 +209,7 @@ class AuthController extends Controller {
     
     public function getImage($location) {
 
-        $path = public_path($location);
+        $path = public_path() . '/Photo/Profile/' . $location;
 
         if(File::exists($path))
             return response()->file($path);
