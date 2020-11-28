@@ -54,8 +54,11 @@ class AuthController extends Controller {
     public function update(Request $request, $id) {
         $requestData = $request->all();
 
-        $user = User::findOrFail($id);  
+        $user = User::find($id);  
     
+        if(is_null($user))
+            return response(['message' => 'user not found'], 404);
+
         if(isset($requestData['nama_user']))
             $user->nama_user = $requestData['nama_user'];
         
@@ -69,7 +72,7 @@ class AuthController extends Controller {
             if(password_verify($requestData['oldPassword'],$user->password)) 
                 $user->password = bcrypt($requestData['newPassword']);
             else 
-                return response(['message' => 'Old Password does not match'], 400);
+                return response(['message' => 'Old Password does not match'], 420);
         }
 
         if($user->save()) {
@@ -103,7 +106,7 @@ class AuthController extends Controller {
         $user = Auth::user();
         
         if(is_null($user->email_verified_at))
-            return response(['message' => 'Email Belum diverifikasi'], 400);
+            return response(['message' => 'Email Belum diverifikasi'], 421);
 
         $token = $user->createToken('Authentication Token')->accessToken;
     
@@ -214,6 +217,6 @@ class AuthController extends Controller {
         if(File::exists($path))
             return response()->file($path);
 
-        return response(['message' => 'file not found', 'path' => $path], 400);
+        return response(['message' => 'file not found', 'path' => $path], 404);
     }
 }
