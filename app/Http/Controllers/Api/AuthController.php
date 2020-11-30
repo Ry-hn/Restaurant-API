@@ -38,8 +38,9 @@ class AuthController extends Controller {
                 'name' => $registrationData['nama_user'],
                 'email' => $user->id
             ];
+
             Mail::to($registrationData['email'])->send(new MailVerification($detail));
-            
+             
             return response([
                 'message' => 'Register Success',
                 'user' => $user,
@@ -47,6 +48,7 @@ class AuthController extends Controller {
             ], 200);
         }
         catch(Exception $e) {
+            
             return response(['message' => 'Registration Failed!', 'error' => $e], 400);
         }
     }
@@ -58,10 +60,13 @@ class AuthController extends Controller {
     
         if(is_null($user))
             return response(['message' => 'user not found'], 404);
-
+        
         if(isset($requestData['nama_user']))
             $user->nama_user = $requestData['nama_user'];
         
+        if(isset($requestData['telepon']))
+            $user->telepon = $requestData['telepon'];
+
         // email bisa diubah atau tidak ??
         // if(isset($requestData['email']))
         //     $user->email = $requestData['email'];
@@ -122,7 +127,7 @@ class AuthController extends Controller {
         $request->user()->token()->revoke();
         return response()->json([
             'message' => 'Successfully logged out'
-        ]);
+        ], 200);
     }
 
     public function verifyEmail($id) {

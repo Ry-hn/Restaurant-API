@@ -20,7 +20,7 @@ Route::get('/user/verify/{id}', 'Api\AuthController@verifyEmail');
 Route::get('user/image/{location}', 'Api\AuthController@getImage');
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+    return response(['message' => 'Success', 'user' => $request->user()]);
 });
 
 Route::group(['middleware' => 'auth:api'], function() {
