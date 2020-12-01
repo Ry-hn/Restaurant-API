@@ -56,7 +56,7 @@ class ProductController extends Controller
 
         $product = Product::create($storeData);
         
-        return response(['message' => 'Add Product Success', 'data' => $product], 200);
+        return response(['message' => 'Add Product Success'], 200);
     }
 
     //delete

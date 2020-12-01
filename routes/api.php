@@ -23,13 +23,15 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return response(['message' => 'Success', 'user' => $request->user()]);
 });
 
-Route::group(['middleware' => 'auth:api'], function() {
-    Route::get('product', 'Api\ProductController@index');
-    Route::get('product/{id}', 'Api\ProductController@show');
-    Route::post('product', 'Api\ProductController@store');
-    Route::put('product/{id}', 'Api\ProductController@update');
-    Route::delete('product/{id}', 'Api\ProductController@destroy');
 
+Route::get('product', 'Api\ProductController@index');
+Route::get('product/{id}', 'Api\ProductController@show');
+Route::post('product', 'Api\ProductController@store');
+Route::put('product/{id}', 'Api\ProductController@update');
+Route::delete('product/{id}', 'Api\ProductController@destroy');
+
+Route::group(['middleware' => 'auth:api'], function() {
+   
     Route::delete('/user/{id}', 'Api\AuthController@destroy');
     Route::post('user/image', 'Api\AuthController@uploadImage');
     Route::put('user/{id}', 'Api\AuthController@update');

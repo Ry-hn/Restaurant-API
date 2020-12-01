@@ -83,13 +83,13 @@ class AuthController extends Controller {
         if($user->save()) {
             return response([
                 'message' => 'Update Profile Success',
-                'data' => $user
+                'user' => $user
             ], 200);
         }
 
         return response([
             'message' => 'Update Profile Failed',
-            'data' => null
+            'user' => null
         ], 400);
 
     }
@@ -172,20 +172,20 @@ class AuthController extends Controller {
         if(is_null($user)) {
             return response([
                 'message' => 'User Not Found',
-                'data' => null
+                'user' => null
             ], 404);
         }
 
         if($user->delete()) {
             return response([
                 'message' => 'Delete User Success',
-                'data' => $user
+                'user' => $user
             ], 200);
         }
 
         return response([
             'message' => 'Delete User Failed',
-            'data' => null
+            'user' => null
         ], 400);
     }
 
@@ -210,7 +210,7 @@ class AuthController extends Controller {
         if($myData->save()) {
             return response([
                 'message' => 'Update Image Success',
-                'data' => $myData
+                'user' => $myData
             ], 200);
         }
     }
