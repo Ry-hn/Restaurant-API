@@ -15,7 +15,7 @@ class PesananController extends Controller{
         $reqData = $request->all();
         
         $pesanan = Pesanan::create($reqData);
-        return response(['message' => 'Add Product Success'], 200);
+        return response(['message' => 'Add Pesanan Success'], 200);
     }
 
     public function search($id) {
@@ -26,7 +26,7 @@ class PesananController extends Controller{
         if($reqData->isEmpty()) 
             return response(['message' => 'Data tidak ditemukan'], 200);
 
-        return response(['message' => 'Retrieve Success', 'pesanan' => $reqData], 200);
+        return response(['message' => 'Retrieve Pesanan Success', 'pesanan' => $reqData], 200);
     }
 
     public function update(Request $request, $id) {
@@ -50,20 +50,20 @@ class PesananController extends Controller{
 
         if(is_null($pesanan)) {
             return response([
-                'message' => 'Product Not Found',
+                'message' => 'Pesanan Not Found',
                 'pesanan' => null
             ], 404);
         }
 
         if($pesanan->delete()) {
             return response([
-                'message' => 'Delete Product Success',
+                'message' => 'Delete Pesanan Success',
                 'pesanan' => $pesanan
             ], 200);
         }
 
         return response([
-            'message' => 'Delete Product Failed',
+            'message' => 'Delete Pesanan Failed',
             'pesanan' => null
         ], 400);
     }
