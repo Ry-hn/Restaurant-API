@@ -14,6 +14,16 @@ class PesananController extends Controller{
     public function store(Request $request) {
         $reqData = $request->all();
         
+        // $data = DB::table('pesanans')->where('pesanans.id_user', $reqData['id_user'])
+        //         ->where('pesanans.id_product', $reqData['id_product'])
+        //         ->first();
+        
+        if(DB::table('pesanans')->where('pesanans.id_user', $reqData['id_user'])
+            ->where('pesanans.id_product', $reqData['id_product'])->increment('jumlah_pesan', $reqData['jumlah_pesan'])) {
+
+                return response(['message' => 'Tambah Jumlah Pesan Berhasil'], 200);
+        }
+        
         $pesanan = Pesanan::create($reqData);
         return response(['message' => 'Add Pesanan Success'], 200);
     }
@@ -30,42 +40,31 @@ class PesananController extends Controller{
     }
 
     public function update(Request $request, $id) {
-        $pesanan = Pesanan::findOrFail($id);
 
-        $jml = $request->all();
+        $data = $request->all();
 
-        if(isset($jml['jumlah_pesan'])) {
-            $pesanan->jumlah_pesan = $jml['jumlah_pesan'];
+        try {
+            if(DB::table('pesanans')->where('id_pesanan', $id)->update(['jumlah_pesan' => $data['jumlah_pesan']])) 
+                return response(['message' => 'Update Pesanan Success'], 200);
+        
+            return response(['message' => 'Pesanan Not Found'], 404);
         }
-
-        if($pesanan->save()) {
-            return response(['message' => 'Update Pesanan Success'], 200);
+        catch(Throwable $e) {
+            return response(['message' => 'Pesanan Gagal di update'], 404);  
         }
-
-        return response(['message' => 'Update Pesanan Gagal'], 400);
     }
 
     public function destroy($id) {
-        $pesanan = Pesanan::findOrFail($id);
-
-        if(is_null($pesanan)) {
-            return response([
-                'message' => 'Pesanan Not Found',
-                'pesanan' => null
-            ], 404);
+        
+        try {
+            if(DB::table('pesanans')->where('id_pesanan', $id)->delete()) 
+                return response(['message' => 'Delete Pesanan Success'], 200);
+        
+            return response(['message' => 'Pesanan Not Found'], 404);
         }
-
-        if($pesanan->delete()) {
-            return response([
-                'message' => 'Delete Pesanan Success',
-                'pesanan' => $pesanan
-            ], 200);
+        catch(Throwable $e) {
+            return response(['message' => 'Pesanan Gagal dihapus'], 404);  
         }
-
-        return response([
-            'message' => 'Delete Pesanan Failed',
-            'pesanan' => null
-        ], 400);
     }
 
 }

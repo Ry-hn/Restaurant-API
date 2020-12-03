@@ -33,7 +33,7 @@ Route::delete('product/{id}', 'Api\ProductController@destroy');
 Route::post('pesanan', 'Api\PesananController@store');
 Route::get('pesanan/{id}', 'Api\PesananController@search');
 Route::put('pesanan/{id}', 'Api\PesananController@update');
-Route::delete('pesanan/{id}', 'Api\PesananController@destroy');
+Route::delete('pesanan/{id_pesanan}', 'Api\PesananController@destroy');
 
 
 Route::group(['middleware' => 'auth:api'], function() {
