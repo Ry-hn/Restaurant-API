@@ -101,7 +101,6 @@ class AuthController extends Controller {
             'email' => 'required',
             'password' => 'required'
         ]);
-
         if($validate->fails()) 
             return response(['message' => $validate->errors()], 400);
         

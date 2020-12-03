@@ -32,7 +32,7 @@ class ProductController extends Controller
         if(!is_null($product)) {
             return response([
                 'message' => 'Retrieve Product Success',
-                'data' => $product
+                'item' => $product
             ], 200);
         }
 
@@ -66,20 +66,20 @@ class ProductController extends Controller
         if(is_null($product)) {
             return response([
                 'message' => 'Product Not Found',
-                'data' => null
+                'item' => null
             ], 404);
         }
 
         if($product->delete()) {
             return response([
                 'message' => 'Delete Product Success',
-                'data' => $product
+                'item' => $product
             ], 200);
         }
 
         return response([
             'message' => 'Delete Product Failed',
-            'data' => null
+            'item' => null
         ], 400);
     }
 
