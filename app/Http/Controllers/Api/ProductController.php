@@ -96,30 +96,37 @@ class ProductController extends Controller
 
         $updateData = $request->all();
         $validate = Validator::make($updateData, [
-            'nama_product' => 'required|max:60|',
-            'deskripsi_product' => 'required',
-            'harga_product' => 'required|numeric',
+            'nama_product' => 'max:60',
+            'harga_product' => 'numeric',
         ]);
+        
 
         if($validate->fails())
             return response(['message' => $validate->errors()], 400);
         
-        $product->nama_product = $updateData['nama_product'];
-        $product->deskripsi_product = $updateData['deskripsi_product'];
-        $product->harga_product = $updateData['harga_product'];
-        $product->gambar_product = is_null($updateData['gambar_product']) 
+        if(isset($updateData['nama_product']))
+            $product->nama_product = $updateData['nama_product'];
+
+        if(isset($updateData['deskripsi_product']))
+            $product->deskripsi_product = $updateData['deskripsi_product'];
+
+        if(isset($updateData['harga_product']))
+            $product->harga_product = $updateData['harga_product'];
+
+        if(isset($updateData['gambar_product']))
+            $product->gambar_product = is_null($updateData['gambar_product']) 
                                     ? $product->gambar_product : $updateData['gambar_product'];
             
         if($product->save()) {
             return response([
                 'message' => 'Update Product Success',
-                'data' => $product
+                'item' => $product
             ], 200);
         }
 
         return response([
             'message' => 'Update Product Failed',
-            'data' => null
+            'item' => null
         ], 400);
     }
 }

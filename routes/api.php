@@ -30,6 +30,12 @@ Route::post('product', 'Api\ProductController@store');
 Route::put('product/{id}', 'Api\ProductController@update');
 Route::delete('product/{id}', 'Api\ProductController@destroy');
 
+Route::post('pesanan', 'Api\PesananController@store');
+Route::get('pesanan/{id}', 'Api\PesananController@search');
+Route::put('pesanan/{id}', 'Api\PesananController@update');
+Route::delete('pesanan/{id}', 'Api\PesananController@destroy');
+
+
 Route::group(['middleware' => 'auth:api'], function() {
    
     Route::delete('/user/{id}', 'Api\AuthController@destroy');
